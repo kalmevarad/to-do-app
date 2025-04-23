@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beautiful ToDo App</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(to right, #74ebd5, #9face6);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      width: 90%;
+      max-width: 400px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    .input-group {
+      display: flex;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      border: 2px solid #ccc;
+      border-radius: 8px 0 0 8px;
+      outline: none;
+      font-size: 16px;
+    }
+
+    button {
+      background-color: #5c6bc0;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 0 8px 8px 0;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #3f51b5;
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    li {
+      background-color: #f1f1f1;
+      margin-bottom: 10px;
+      padding: 10px 15px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    li button {
+      background-color: #ef5350;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      color: white;
+    }
+
+    li button:hover {
+      background-color: #d32f2f;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>My ToDo List</h2>
+    <div class="input-group">
+      <input type="text" id="todoInput" placeholder="Add a new task">
+      <button onclick="addTodo()">Add</button>
+    </div>
+    <ul id="todoList"></ul>
+  </div>
+
+  <script>
+    const todoList = document.getElementById('todoList');
+
+    function getTodos() {
+      return JSON.parse(localStorage.getItem('todos')) || [];
+    }
+
+    function saveTodos(todos) {
+      localStorage.setItem('todos', JSON.stringify(todos));
+    }
+
+    function renderTodos() {
+      todoList.innerHTML = '';
+      const todos = getTodos();
+      todos.forEach((todo, index) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <span>${todo}</span>
+          <button onclick="removeTodo(${index})">Delete</button>
+        `;
+        todoList.appendChild(li);
+      });
+    }
+
+    function addTodo() {
+      const input = document.getElementById('todoInput');
+      const newTodo = input.value.trim();
+      if (newTodo === '') return;
+      const todos = getTodos();
+      todos.push(newTodo);
+      saveTodos(todos);
+      input.value = '';
+      renderTodos();
+    }
+
+    function removeTodo(index) {
+      const todos = getTodos();
+      todos.splice(index, 1);
+      saveTodos(todos);
+      renderTodos();
+    }
+
+    
+    renderTodos();
+  </script>
+</body>
+</html>
