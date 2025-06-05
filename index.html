@@ -3,149 +3,187 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Beautiful ToDo App</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <title>To Do app</title>
   <style>
-    * {
-      box-sizing: border-box;
+    body{
+      padding: 0px;
+      margin: 0px;
+      background-color: #F1EFEC;
     }
 
-    body {
-      font-family: 'Roboto', sans-serif;
-      background: linear-gradient(to right, #74ebd5, #9face6);
-      margin: 0;
-      padding: 0;
+    .app-heading{
+      text-align: center;
+      color: #123458;
+    }
+
+    .add-task-container{
+      background-color: #030303;
+      padding: 20px;
+      position: fixed;
+      bottom: 0px;
+      right: 0px;
+      left: 0px;
       display: flex;
       justify-content: center;
-      align-items: center;
-      height: 100vh;
     }
 
-    .container {
-      background: white;
-      padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-      width: 90%;
-      max-width: 400px;
+    .task-input{
+      margin: 0 10px;
+      font-size: 20px;
+      padding: 0px 3px;
     }
 
-    h2 {
-      text-align: center;
-      color: #333;
+    .input-priority{
+      font-size: 20px;
+      margin: 0 10px;
     }
 
-    .input-group {
-      display: flex;
-      margin-bottom: 20px;
+    .add-btn{
+      padding: 10px 20px;
+      font-size: 20px;
+      cursor: pointer;
+      border: none;
+      background-color: #D4C9BE;
     }
-
-    input[type="text"] {
-      flex: 1;
+    
+    .todo-card{
+      margin: 10px;
       padding: 10px;
-      border: 2px solid #ccc;
-      border-radius: 8px 0 0 8px;
-      outline: none;
-      font-size: 16px;
+      border: solid 3px #123458;
+      border-radius: 10px;
+      position: relative;
+      background-color: #D4C9BE;
     }
 
-    button {
-      background-color: #5c6bc0;
-      color: white;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 0 8px 8px 0;
-      cursor: pointer;
-      transition: background-color 0.3s;
+    .card-title{
+      font-size: 20px;
+      margin: 0;
     }
 
-    button:hover {
-      background-color: #3f51b5;
+    .card-priority{
+      position: absolute;
+      right: 0;
+      top: 0;
+      margin: 10px;
+      margin-right: 40px;
     }
 
-    ul {
-      list-style-type: none;
-      padding: 0;
+    .bin{
+      height: 20px;
+      position: absolute;
+      right: 0;
+      top: 0;
+      margin: 10px;
+
     }
 
-    li {
-      background-color: #f1f1f1;
-      margin-bottom: 10px;
-      padding: 10px 15px;
-      border-radius: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+    @media(max-width: 768px){
+      .add-task-container{
+        padding: 10px;
+        padding-top: 20px;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
 
-    li button {
-      background-color: #ef5350;
-      border: none;
-      padding: 6px 10px;
-      border-radius: 6px;
-      cursor: pointer;
-      color: white;
-    }
+      .add-btn{
+        padding: 5px 10px;
+        font-size: 16px;
+        margin-bottom: 20px;
+        width: 400px;
+      }
 
-    li button:hover {
-      background-color: #d32f2f;
+      .task-input{
+        font-size: 16px;
+        margin-bottom: 20px;
+        width: 400px;
+        
+      }
+
+      .input-priority{
+        font-size: 16px;
+        margin-bottom: 20px;
+        width: 400px;
+        padding: 3px;
+      }
+
+      
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>My ToDo List</h2>
-    <div class="input-group">
-      <input type="text" id="todoInput" placeholder="Add a new task">
-      <button onclick="addTodo()">Add</button>
-    </div>
-    <ul id="todoList"></ul>
+  <h1 class="app-heading">To Do's</h1>
+  <div class="to-do-list" id="to-do-list">
+
   </div>
 
-  <script>
-    const todoList = document.getElementById('todoList');
+<div class="add-task-container">
+  <input type="text" id="task" class="task-input">
+ 
+  <select class="input-priority" id="priority">
+    <option id="high">High</option>
+    <option id="medium">Medium</option>
+    <option id="low">Low</option>
+  </select>
 
-    function getTodos() {
-      return JSON.parse(localStorage.getItem('todos')) || [];
+  <button onclick="addtask()" class="add-btn">Add task</button>
+
+</div>
+
+
+
+<script>
+  let tasks = [];
+
+
+  function addtask(){
+
+    const inputTaskElement = document.getElementById('task');
+    const inputPriorityElement = document.getElementById('priority');
+
+    const newTask = {
+      task : inputTaskElement.value,
+      priority: inputPriorityElement.value || "medium",
+    };
+
+    tasks.unshift(newTask);
+
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+
+    renderToDoList(tasks);
+  }
+
+  const savedTask = localStorage.getItem("tasks");
+
+  if(savedTask){
+    tasks = JSON.parse(savedTask);
+  }
+
+  function renderToDoList(TaskList){
+    const ToDoListElement = document.getElementById("to-do-list");
+
+    ToDoListElement.innerHTML ='';
+
+    for(i=0; i<TaskList.length; i++){
+      const taskObj = TaskList[i];
+
+      ToDoListElement.innerHTML += `
+      <div class="todo-card">
+        <h3 class="card-title">${taskObj.task}</h3>
+        <span class="card-priority">${taskObj.priority}</span>
+        <img src="./trash-bin.png" onclick="removeTask(${i})" class="bin"/>
+      </div>`
     }
+  }
 
-    function saveTodos(todos) {
-      localStorage.setItem('todos', JSON.stringify(todos));
-    }
+  function removeTask(taskIndex){
+    tasks.splice(taskIndex, 1);
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+    renderToDoList(tasks);
+  }
 
-    function renderTodos() {
-      todoList.innerHTML = '';
-      const todos = getTodos();
-      todos.forEach((todo, index) => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-          <span>${todo}</span>
-          <button onclick="removeTodo(${index})">Delete</button>
-        `;
-        todoList.appendChild(li);
-      });
-    }
+renderToDoList(tasks);
 
-    function addTodo() {
-      const input = document.getElementById('todoInput');
-      const newTodo = input.value.trim();
-      if (newTodo === '') return;
-      const todos = getTodos();
-      todos.push(newTodo);
-      saveTodos(todos);
-      input.value = '';
-      renderTodos();
-    }
-
-    function removeTodo(index) {
-      const todos = getTodos();
-      todos.splice(index, 1);
-      saveTodos(todos);
-      renderTodos();
-    }
-
-    
-    renderTodos();
-  </script>
+</script>
 </body>
 </html>
